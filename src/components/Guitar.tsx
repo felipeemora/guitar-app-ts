@@ -1,16 +1,18 @@
+import { Dispatch } from "react";
 import type { Guitar } from "../types";
+import { CartActions } from "../reducers/cart-reducer";
 
 interface Props {
   guitar: Guitar,
-  addToCart: (item: Guitar) => void
+  dispatch: Dispatch<CartActions>
 }
 
-const Guitar = ({guitar, addToCart}: Props) => {
+const Guitar = ({guitar, dispatch}: Props) => {
 
   const { name, image, price, description} = guitar;
 
   const handleClick = (guitar: Guitar) => {
-    addToCart(guitar);
+    dispatch({ 'type': 'add-to-cart', payload: { item: guitar } });
   }
 
   return (

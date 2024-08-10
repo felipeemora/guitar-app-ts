@@ -1,16 +1,17 @@
-import { CartItem, Guitar } from "../types"
+import { Dispatch, useMemo } from "react";
+import { CartItem } from "../types"
+import { CartActions } from "../reducers/cart-reducer";
 
 interface HeaderProps {
   cart: CartItem[],
-  removeFromCard: (id: Guitar["id"]) => void,
-  increaseQuantity: (id: Guitar["id"]) => void,
-  decreaseFromCart: (id: Guitar["id"]) => void,
-  clearCart: () => void,
-  isEmpty: boolean,
-  cartTotal: number
+  dispatch: Dispatch<CartActions>
 }
 
-export const Header = ({ cart, removeFromCard, increaseQuantity, decreaseFromCart, clearCart, isEmpty, cartTotal }: HeaderProps) => {
+export const Header = ({ cart, dispatch }: HeaderProps) => {
+
+  const isEmpty = useMemo(() => cart.length === 0, [cart]);
+  const cartTotal = useMemo(() => cart.reduce((total, item) => total + (item.quantity * item.price), 0), [cart]);
+
   return (
     <header className="py-5 header">
       <div className="container-xl">
@@ -59,7 +60,7 @@ export const Header = ({ cart, removeFromCard, increaseQuantity, decreaseFromCar
                                   <button
                                     type="button"
                                     className="btn btn-dark"
-                                    onClick={() => decreaseFromCart(guitar.id)}
+                                    onClick={() => dispatch({type: 'decrease-quantity', payload: { id: guitar.id}})}
                                   >
                                     -
                                   </button>
@@ -67,14 +68,14 @@ export const Header = ({ cart, removeFromCard, increaseQuantity, decreaseFromCar
                                   <button
                                     type="button"
                                     className="btn btn-dark"
-                                    onClick={() => increaseQuantity(guitar.id)}
+                                    onClick={() => dispatch({type: 'increase-quantity', payload: { id: guitar.id } })}
                                   >
                                     +
                                   </button>
                                 </td>
                                 <td>
                                   <button
-                                    onClick={() => removeFromCard(guitar.id)}
+                                    onClick={() => dispatch({ type: 'remove-from-cart', payload: { id: guitar.id } })}
                                     className="btn btn-danger"
                                     type="button"
                                   >
@@ -87,7 +88,7 @@ export const Header = ({ cart, removeFromCard, increaseQuantity, decreaseFromCar
                         </tbody>
                       </table>
                       <p className="text-end">Total pagar: <span className="fw-bold">{cartTotal}</span></p>
-                      <button className="btn btn-dark w-100 mt-3 p-2" onClick={() => clearCart()}>Vaciar Carrito</button>
+                      <button className="btn btn-dark w-100 mt-3 p-2" onClick={() => dispatch({ type: 'clear-cart' })}>Vaciar Carrito</button>
                     </>
                   )}
               </div>
